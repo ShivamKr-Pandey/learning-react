@@ -73,9 +73,7 @@ function Counter() {
 
       {count !== 1 || date !== 0 ? (
         <button onClick={() => handleReset()}>Reset</button>
-      ) : (
-        ""
-      )}
+      ) : null}
     </div>
   );
 }
