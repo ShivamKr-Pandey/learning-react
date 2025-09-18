@@ -41,7 +41,7 @@ function Counter() {
           min="1"
           max="10"
           value={count}
-          onChange={(e) => setCount(e.target.value)}
+          onChange={(e) => setCount(Number(e.target.value))}
         />
         {count}
       </div>
@@ -52,9 +52,9 @@ function Counter() {
         <input
           type="text"
           value={date}
-          onChange={(e) => setDate(e.target.value)}
+          onChange={(e) => setDate(Number(e.target.value))}
         />
-        <button onClick={() => setDate((date) => date + +count)}>+</button>
+        <button onClick={() => setDate((date) => date + count)}>+</button>
       </div>
 
       {/* Display Date */}
@@ -71,7 +71,11 @@ function Counter() {
         </h3>
       </div>
 
-      <button onClick={() => handleReset()}>Reset</button>
+      {count !== 1 || date !== 0 ? (
+        <button onClick={() => handleReset()}>Reset</button>
+      ) : (
+        ""
+      )}
     </div>
   );
 }
