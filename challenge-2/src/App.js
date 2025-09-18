@@ -20,6 +20,11 @@ function Counter() {
     return formattedDate;
   }
 
+  function handleReset() {
+    setCount(1);
+    setDate(0);
+  }
+
   return (
     <div
       style={{
@@ -31,16 +36,25 @@ function Counter() {
     >
       {/* Step Counter */}
       <div className="step_counter">
-        <button onClick={() => setCount((count) => count - 1)}>-</button>
-        <span>step: {count}</span>
-        <button onClick={() => setCount((count) => count + 1)}>+</button>
+        <input
+          type="range"
+          min="1"
+          max="10"
+          value={count}
+          onChange={(e) => setCount(e.target.value)}
+        />
+        {count}
       </div>
 
       {/* Date Counter */}
       <div className="date_counter">
         <button onClick={() => setDate((date) => date - count)}>-</button>
-        <span>counter: {date}</span>
-        <button onClick={() => setDate((date) => date + count)}>+</button>
+        <input
+          type="text"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+        />
+        <button onClick={() => setDate((date) => date + +count)}>+</button>
       </div>
 
       {/* Display Date */}
@@ -56,6 +70,8 @@ function Counter() {
           {addDays()}.
         </h3>
       </div>
+
+      <button onClick={() => handleReset()}>Reset</button>
     </div>
   );
 }
