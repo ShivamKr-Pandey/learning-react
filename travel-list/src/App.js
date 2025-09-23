@@ -138,7 +138,7 @@ function Footer({ items }) {
   return (
     <footer className="stats">
       <em>
-        You have {items.length} items on you list, and you already packed{" "}
+        You have {items.length} items on you list, and you already packed
         {packedItems} ({Number.isNaN(percentage) ? "0" : percentage}%)
       </em>
     </footer>
