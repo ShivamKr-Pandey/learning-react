@@ -11,12 +11,24 @@ export default function App() {
     setItems((items) => items.filter((item) => item.id !== id));
   }
 
+  function toggleItem(id) {
+    setItems((items) =>
+      items.map((item) =>
+        item.id === id ? { ...item, packed: !item.packed } : item
+      )
+    );
+  }
+
   return (
     <>
       <Header />
       <main>
         <Form onAddItems={addItem} />
-        <PackingList items={items} onDeleteItem={deleteItem} />
+        <PackingList
+          items={items}
+          onDeleteItem={deleteItem}
+          onToggleItem={toggleItem}
+        />
       </main>
       <Footer items={items} />
     </>
@@ -81,21 +93,35 @@ function Form({ onAddItems }) {
   );
 }
 
-function PackingList({ items, onDeleteItem }) {
+function PackingList({ items, onDeleteItem, onToggleItem }) {
   return (
     <div className="list">
-      <ul>
-        {items.map((item) => (
-          <Item item={item} onDeleteItem={onDeleteItem} key={item.id} />
-        ))}
-      </ul>
+      {items.length === 0 ? (
+        <p>No items added yet.</p>
+      ) : (
+        <ul>
+          {items.map((item) => (
+            <Item
+              item={item}
+              onDeleteItem={onDeleteItem}
+              key={item.id}
+              onToggleItem={onToggleItem}
+            />
+          ))}
+        </ul>
+      )}
     </div>
   );
 }
 
-function Item({ item, onDeleteItem }) {
+function Item({ item, onDeleteItem, onToggleItem }) {
   return (
     <li>
+      <input
+        type="checkbox"
+        value={item.packed}
+        onChange={() => onToggleItem(item.id)}
+      />
       <span style={item.packed ? { textDecoration: "line-through" } : {}}>
         {item.quantity} {item.description}
       </span>
@@ -104,17 +130,16 @@ function Item({ item, onDeleteItem }) {
   );
 }
 
-function Footer({ items, onDeleteItem }) {
+function Footer({ items }) {
   let allItems = items.length;
   const packedItems = items.filter((item) => item.packed).length;
-  console.log(packedItems);
   const percentage = Math.round((packedItems / allItems) * 100);
 
   return (
     <footer className="stats">
       <em>
         You have {items.length} items on you list, and you already packed{" "}
-        {packedItems} ({percentage}%)
+        {packedItems} ({Number.isNaN(percentage) ? "0" : percentage}%)
       </em>
     </footer>
   );
