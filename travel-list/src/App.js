@@ -138,7 +138,6 @@ function Footer({ items }) {
   return (
     <footer className="stats">
       <em>
-        {" "}
         {percentage === 100 && allItems > 0
           ? "You are ready to go ✈️"
           : `You have ${allItems} items on you list, and you already packed
