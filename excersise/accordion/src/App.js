@@ -35,14 +35,15 @@ function Accordion({ data }) {
           curOpen={setOpen}
           num={index + 1}
           title={el.title}
-          text={el.text}
-        />
+        >
+          <div className="content-box">{el.text}</div>
+        </FaqItem>
       ))}
     </div>
   );
 }
 
-function FaqItem({ num, title, text, isOpen, curOpen }) {
+function FaqItem({ num, title, children, isOpen, curOpen }) {
   const open = isOpen === num;
 
   function toggle() {
@@ -54,7 +55,7 @@ function FaqItem({ num, title, text, isOpen, curOpen }) {
       <p className="number">{num}</p>
       <p className="title">{title}</p>
       <p className="icon">{open ? "-" : "+"}</p>
-      {open && <div className="content-box">{text}</div>}
+      {open && children}
     </div>
   );
 }
