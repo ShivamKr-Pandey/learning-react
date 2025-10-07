@@ -47,7 +47,7 @@ function FaqItem({ num, title, children, isOpen, curOpen }) {
   const open = isOpen === num;
 
   function toggle() {
-    curOpen(num);
+    curOpen(open ? null : num);
   }
 
   return (
