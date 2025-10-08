@@ -1,20 +1,25 @@
 import { useState } from "react";
 
 function App() {
-  const [bill, setBill] = useState();
-  const [tipAmount, setTipAmount] = useState(0);
-  const [friendTip, setFriendTip] = useState(0);
+  // keep input states as strings (matches input.value) and coerce to numbers for calculations
+  const [bill, setBill] = useState("");
+  const [tipAmount, setTipAmount] = useState("0");
+  const [friendTip, setFriendTip] = useState("0");
 
   function reset() {
-    setBill(0);
-    setTipAmount(0);
-    setFriendTip(0);
+    setBill("");
+    setTipAmount("0");
+    setFriendTip("0");
   }
 
-  const totalTip =
-    Number((bill / 100) * tipAmount) + Number((bill / 100) * friendTip);
+  // coerce values to numbers and fall back to 0 when empty/invalid
+  const billNum = Number(bill) || 0;
+  const tipPercent = Number(tipAmount) || 0;
+  const friendPercent = Number(friendTip) || 0;
 
-  const totalBill = Number(bill) + totalTip;
+  const totalTip =
+    (billNum * tipPercent) / 100 + Math.round((billNum * friendPercent) / 100);
+  const totalBill = billNum + totalTip;
 
   return (
     <div className="App">
@@ -53,9 +58,7 @@ function App() {
       </form>
 
       <h2>
-        You Pay ${Number.isNaN(totalTip) ? "0" : totalBill} ($
-        {bill === undefined ? "0" : bill} + $
-        {Number.isNaN(totalTip) ? "0" : totalTip} tip)
+        You Pay ${totalBill} (${billNum} + ${totalTip} tip)
       </h2>
 
       <ResetButton onClick={reset}>Reset</ResetButton>
