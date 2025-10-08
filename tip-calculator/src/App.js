@@ -23,63 +23,73 @@ function App() {
 
   return (
     <div className="App">
-      <form>
-        <label for="billAmount">How much was the bill?</label>
-        <input
-          type="number"
-          id="billAmount"
-          name="billAmount"
-          value={bill}
-          onChange={(e) => setBill(e.target.value)}
-        />
-        <Tip
-          labelFor="tipAmount"
-          label="How much would you like to tip?"
-          tipAmount={tipAmount}
-          setTipAmount={setTipAmount}
-        >
-          <option value="0">0%</option>
-          <option value="10">10%</option>
-          <option value="15">15%</option>
-          <option value="20">20%</option>
-        </Tip>
+      {/* Bill Amount */}
+      <BillInput bill={bill} setBill={setBill} />
 
-        <Tip
-          labelFor="friendTip"
-          label="How much your friend would like to tip?"
-          tipAmount={friendTip}
-          setTipAmount={setFriendTip}
-        >
-          <option value="0">0%</option>
-          <option value="10">10%</option>
-          <option value="15">15%</option>
-          <option value="20">20%</option>
-        </Tip>
-      </form>
+      {/* You Tip */}
+      <Tip
+        labelFor="tipAmount"
+        tipAmount={tipAmount}
+        setTipAmount={setTipAmount}
+      >
+        How much would you like to tip?
+      </Tip>
+      {/* Your Friend's Tip */}
+      <Tip
+        labelFor="friendTip"
+        tipAmount={friendTip}
+        setTipAmount={setFriendTip}
+      >
+        How much your friend would like to tip?
+      </Tip>
 
-      <h2>
+      {/* Total Bill */}
+      <TotalBillMsg>
         You Pay ${totalBill} (${billNum} + ${totalTip} tip)
-      </h2>
+      </TotalBillMsg>
 
+      {/* Reset Button */}
       <ResetButton onClick={reset}>Reset</ResetButton>
     </div>
   );
 }
 
-function Tip({ labelFor, label, children, tipAmount, setTipAmount }) {
+function BillInput({ bill, setBill }) {
+  return (
+    <form>
+      <label for="billAmount">How much was the bill?</label>
+      <input
+        type="number"
+        id="billAmount"
+        name="billAmount"
+        value={bill}
+        onChange={(e) => setBill(e.target.value)}
+      />
+    </form>
+  );
+}
+
+function Tip({ labelFor, children, tipAmount, setTipAmount }) {
   return (
     <div>
-      <label for={labelFor}>{label}</label>
+      <label for={labelFor}>{children}</label>
       <select
         id={labelFor}
         name={labelFor}
         value={tipAmount}
         onChange={(e) => setTipAmount(e.target.value)}
       >
-        {children}
+        <option value="0">0%</option>
+        <option value="10">10%</option>
+        <option value="15">15%</option>
+        <option value="20">20%</option>
       </select>
     </div>
   );
+}
+
+function TotalBillMsg({ children }) {
+  return <h2>{children}</h2>;
 }
 
 function ResetButton({ onClick, children }) {
