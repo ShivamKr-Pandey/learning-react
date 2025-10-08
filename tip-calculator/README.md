@@ -6,7 +6,8 @@ graph TD
     subgraph App [App Component]
         A[State: bill, tipAmount, friendTip]
         B[Functions: setBill, setTipAmount, setFriendTip, reset]
-        C[Derived State: totalTip, totalBill]
+        C[Derived State: totalTip, totalBill, billNum]
+        COND{bill > 0?}
     end
 
     subgraph BillInput [BillInput Component]
@@ -22,7 +23,7 @@ graph TD
     end
 
     subgraph TotalBillMsg [TotalBillMsg Component]
-      J[Prop: children]
+      J[Props: totalBill, billNum, totalTip]
       K[UI: <h2>]
     end
 
@@ -33,15 +34,24 @@ graph TD
     end
 
     %% Define the connections between nodes (Data Flow)
-    %% App to Children (Props Down)
+
+    %% Internal App Flow
+    A -- "Calculates" --> C
+    A -- "bill state" --> COND
+
+    %% Conditional Rendering Flow
+    COND -- "True" --> J
+    COND -- "True" --> L
+
+    %% Data Down (Props)
     A -- "bill" --> D
-    B -- "setBill" --> D
-    A -- "tipAmount" --> G
-    B -- "setTipAmount" --> G
-    C -- "Calculated string" --> J
+    B -- "setBill()" --> D
+    A -- "tipAmount/friendTip" --> G
+    B -- "setTipAmount()/setFriendTip()" --> G
+    C -- "totalBill, billNum, totalTip" --> J
     B -- "reset()" --> L
 
-    %% Children to App (Events Up)
+    %% Events Up (Callbacks)
     E -- "User input" --> F
     F -- "triggers setBill()" --> B
     H -- "User selection" --> I
@@ -49,19 +59,19 @@ graph TD
     M -- "User click" --> N
     N -- "triggers reset()" --> B
 
-    %% App Internal Flow
-    A -- "Calculates" --> C
-    J -- "Renders" --> K
-
     %% --- STYLING SECTION ---
-    style App fill:#e0f7fa,stroke:#00796b,stroke-width:4px,color:#004d40
-    style BillInput fill:#ede7f6,stroke:#5e35b1,stroke-width:4px,color:#311b94
-    style Tip fill:#fff9c4,stroke:#fbc04d,stroke-width:4px,color:#795548
-    style TotalBillMsg fill:#e8f5e9,stroke:#388e3c,stroke-width:4px,color:#1b5e40
-    style Reset fill:#ffcdd4,stroke:#c64848,stroke-width:4px,color:#b71c1c
+    %% Style the subgraphs with background, border, and text colors
+    style App fill:#00796b,stroke:#e0f7fa,stroke-width:4px,color:#e0f7fa
+    style BillInput fill:#5e35b1,stroke:#ede7f6,stroke-width:4px,color:#ede7f6
+    style Tip fill:#fbc02d,stroke:#fff9c4,stroke-width:4px,color:#fff9c4
+    style TotalBillMsg fill:#388e3c,stroke:#e8f5e9,stroke-width:4px,color:#e8f5e9
+    style Reset fill:#c62828,stroke:#ffcdd2,stroke-width:4px,color:#ffcdd2
 
-    %% Style individual arrows (links)
-    linkStyle 6 stroke:#5e35b1,stroke-width:4px,stroke-dasharray: 5 5
-    linkStyle 9 stroke:#fbc04d,stroke-width:4px
-    linkStyle 11 stroke:#c64848,stroke-width:4px
+    %% Style the conditional logic node
+    style COND fill:#b2dfdb,stroke:#00796b
+
+    %% Style key arrows
+    linkStyle 10 stroke:#311b92,stroke-width:4px,stroke-dasharray: 5 5
+    linkStyle 12 stroke:#fbc02d,stroke-width:4px
+    linkStyle 14 stroke:#c62828,stroke-width:4px
 ```

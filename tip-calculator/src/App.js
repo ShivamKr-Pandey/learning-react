@@ -43,13 +43,19 @@ function App() {
         How much your friend would like to tip?
       </Tip>
 
-      {/* Total Bill */}
-      <TotalBillMsg>
-        You Pay ${totalBill} (${billNum} + ${totalTip} tip)
-      </TotalBillMsg>
+      {bill > 0 && (
+        <>
+          {/* Total Bill */}
+          <TotalBillMsg
+            totalBill={totalBill}
+            billNum={billNum}
+            totalTip={totalTip}
+          />
 
-      {/* Reset Button */}
-      <ResetButton onClick={reset}>Reset</ResetButton>
+          {/* Reset Button */}
+          <ResetButton onClick={reset}>Reset</ResetButton>
+        </>
+      )}
     </div>
   );
 }
@@ -62,6 +68,7 @@ function BillInput({ bill, setBill }) {
         type="number"
         id="billAmount"
         name="billAmount"
+        placeholder="Bill Value"
         value={bill}
         onChange={(e) => setBill(e.target.value)}
       />
@@ -88,8 +95,12 @@ function Tip({ labelFor, children, tipAmount, setTipAmount }) {
   );
 }
 
-function TotalBillMsg({ children }) {
-  return <h2>{children}</h2>;
+function TotalBillMsg({ totalBill, billNum, totalTip }) {
+  return (
+    <h2>
+      You Pay ${totalBill} (${billNum} + ${totalTip} tip)
+    </h2>
+  );
 }
 
 function ResetButton({ onClick, children }) {
