@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const friends = [
+const iniFriends = [
   {
     id: 118836,
     name: "Clark",
@@ -22,34 +22,47 @@ const friends = [
 ];
 
 function App() {
-  return (
-    <div className="app">
-      <FriendsList />
-    </div>
-  );
-}
+  const [friends, setFriends] = useState(iniFriends);
 
-function FriendsList() {
   const [addFriend, setAddFriend] = useState(false);
 
   function handleAddFriend() {
     setAddFriend((cur) => !cur);
   }
 
+  // This way will not change the original array. Because react is all about Immutability.
+  function addNewFriend(newFriend) {
+    setFriends((friends) => [...friends, newFriend]);
+    setAddFriend(false);
+  }
+
   return (
-    <div className="sidebar">
+    <div className="app">
+      <div className="sidebar">
+        <FriendsList friends={friends} />
+        {addFriend && <AddFriend onAddFriend={addNewFriend} />}
+        <Button
+          className="button"
+          onClick={() => {
+            handleAddFriend();
+          }}
+        >
+          {addFriend ? "Close" : "Add Friend"}
+        </Button>
+      </div>
+      <SplitBill />
+    </div>
+  );
+}
+
+function FriendsList({ friends }) {
+  const friendsList = friends;
+
+  return (
+    <div>
       <ul>
-        <Friends list={friends} />
-        {addFriend && <AddFriend />}
+        <Friends list={friendsList} />
       </ul>
-      <Button
-        className="button"
-        onClick={() => {
-          handleAddFriend();
-        }}
-      >
-        {addFriend ? "Close" : "Add Friend"}
-      </Button>
     </div>
   );
 }
@@ -89,7 +102,13 @@ function SplitBill({ name }) {
       <Input id="your-expense" value="" type={"number"} onChange={() => {}}>
         <span>🧍‍♂️</span> Your Expense
       </Input>
-      <Input id="friend-expense" value="" type={"number"} onChange={() => {}}>
+      <Input
+        id="friend-expense"
+        value=""
+        type={"number"}
+        disabled={"true"}
+        onChange={() => {}}
+      >
         <span>👯‍♂️</span> {name}'s expense:
       </Input>
       <label for="payee">
@@ -104,29 +123,36 @@ function SplitBill({ name }) {
   );
 }
 
-function AddFriend() {
+function AddFriend({ onAddFriend }) {
   const [name, setName] = useState("");
-  const [image, setImage] = useState("");
+  const [image, setImage] = useState("https://i.pravatar.cc/48");
 
-  function addFriend() {
-    // if (!name || !image) return;
+  function addFriend(e) {
+    e.preventDefault();
+    if (!name || !image) return;
+
     const id = crypto.randomUUID();
-    friends.push({
+    const newFriend = {
       id: id,
       name: name,
-      image: image,
+      image: `${image}?=${id}`,
       balance: 0,
-    });
+    };
+
+    onAddFriend(newFriend);
+
+    setName("");
+    setImage("https://i.pravatar.cc/48");
   }
 
   return (
     <>
-      <form className="form-add-friend">
+      <form className="form-add-friend" onSubmit={addFriend}>
         <Input
           id="name"
           value={name}
-          onChange={() => {
-            setName();
+          onChange={(e) => {
+            setName(e.target.value);
           }}
           type={"text"}
         >
@@ -135,20 +161,14 @@ function AddFriend() {
         <Input
           id="image"
           value={image}
-          onChange={() => {
-            setImage();
+          onChange={(e) => {
+            setImage(e.target.value);
           }}
           type={"url"}
         >
           Image URL
         </Input>
-        <Button
-          onClick={() => {
-            addFriend();
-          }}
-        >
-          Add
-        </Button>
+        <Button>Add</Button>
       </form>
     </>
   );
@@ -162,11 +182,17 @@ function Button({ onClick, children }) {
   );
 }
 
-function Input({ value, onChange, children, id, type }) {
+function Input({ value, onChange, children, id, type, disabled }) {
   return (
     <>
       <label htmlFor={id}>{children}</label>
-      <input id={id} value={value} onChange={onChange} type={type} />
+      <input
+        id={id}
+        value={value}
+        onChange={onChange}
+        type={type}
+        disabled={disabled}
+      />
     </>
   );
 }
