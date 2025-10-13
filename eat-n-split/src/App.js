@@ -1,3 +1,5 @@
+import { useState } from "react";
+
 const friends = [
   {
     name: "Clark",
@@ -19,35 +21,44 @@ const friends = [
 function App() {
   return (
     <div className="app">
-      <Friend />
+      <FriendsList />
     </div>
   );
 }
 
-function Friend() {
+function FriendsList() {
   return (
     <div className="sidebar">
       <ul>
-        {friends.map((friend) => (
-          <li>
-            <img src={friend.image} alt={friend.name} />
-            <h3>{friend.name}</h3>
-            <Button onClick={() => {}}>Select</Button>
-            {friend.balance < 0 && (
-              <p className="red">
-                You owe {friend.name} Rs {Math.abs(friend.balance)}
-              </p>
-            )}
-            {friend.balance > 0 && (
-              <p className="green">
-                {friend.name} owes you Rs {friend.balance}
-              </p>
-            )}
-            {friend.balance === 0 && <p>You and {friend.name} are even</p>}
-          </li>
-        ))}
+        <Friends list={friends} />
       </ul>
     </div>
+  );
+}
+
+function Friends({ list }) {
+  return (
+    <>
+      {list.map((friend) => (
+        <li key={friend.id}>
+          <img src={friend.image} alt={friend.name} />
+          <h3>{friend.name}</h3>
+          <Button onClick={() => {}}>Select</Button>
+
+          {friend.balance < 0 && (
+            <p className="red">
+              You owe {friend.name} Rs {Math.abs(friend.balance)}
+            </p>
+          )}
+          {friend.balance > 0 && (
+            <p className="green">
+              {friend.name} owes you Rs {friend.balance}
+            </p>
+          )}
+          {friend.balance === 0 && <p>You and {friend.name} are even</p>}
+        </li>
+      ))}
+    </>
   );
 }
 
