@@ -116,62 +116,71 @@ function Friends({ list, select, onSelect }) {
 function SplitBill({ selectFriend }) {
   const [totalBill, setTotalBill] = useState("");
   const [yourExpense, setYourExpense] = useState("");
-  const [friendExpense, setFriendExpense] = useState("");
   const [whoIsPaying, setWhoIsPaying] = useState("you");
 
-  function handelFriendsExpense() {
-    const friendExpense = totalBill - yourExpense;
-    setFriendExpense(friendExpense);
+  const totalNum = Number(totalBill) || 0;
+  const yourNum = Number(yourExpense) || 0;
+  const friendExpense = Math.max(0, totalNum - yourNum);
+
+  function handleSubmit(e) {
+    e.preventDefault();
+    // replace with your logic to update balances
+    // Example: console.log({ totalNum, yourNum, friendExpense, whoIsPaying });
+
+    if (whoIsPaying === "you") {
+      selectFriend.balance += friendExpense;
+    } else {
+      selectFriend.balance -= friendExpense;
+    }
+
+    setTotalBill("");
+    setYourExpense("");
+    setWhoIsPaying("you");
+    return;
   }
 
   return (
-    <form className="form-split-bill">
+    <form className="form-split-bill" onSubmit={handleSubmit}>
       <Input
         id="bill"
         value={totalBill}
         type={"number"}
-        onChange={(e) => {
-          setTotalBill(e.traget.value);
-        }}
+        onChange={(e) => setTotalBill(e.target.value)} // fixed typo (target)
       >
         <span>💰</span> Bill Value
       </Input>
+
       <Input
         id="your-expense"
         value={yourExpense}
         type={"number"}
-        onChange={(e) => {
-          setYourExpense(e.target.value);
-        }}
-        onBlur={handelFriendsExpense}
+        onChange={(e) => setYourExpense(e.target.value)}
       >
         <span>🧍‍♂️</span> Your Expense
       </Input>
+
       <Input
         id="friend-expense"
         value={friendExpense}
         type={"number"}
-        disabled={"true"}
-        onChange={(e) => {
-          setFriendExpense(e.target.value);
-        }}
+        disabled={true}
       >
         <span>👯‍♂️</span> {selectFriend.name}'s expense:
       </Input>
+
       <label htmlFor="payee">
         <span>🤑</span>Who is Paying the Bill?
       </label>
       <select
         id="payee"
         value={whoIsPaying}
-        onChange={(e) => {
-          setWhoIsPaying(e.target.value);
-        }}
+        onChange={(e) => setWhoIsPaying(e.target.value)}
       >
         <option value="you">You</option>
         <option value="friend">{selectFriend.name}</option>
       </select>
-      <Button onClick={() => {}}>Split Bill</Button>
+
+      <Button type="submit">Split Bill</Button>
     </form>
   );
 }
@@ -221,15 +230,15 @@ function AddFriend({ onAddFriend }) {
         >
           Image URL
         </Input>
-        <Button>Add</Button>
+        <Button type={"submit"}>Add</Button>
       </form>
     </>
   );
 }
 
-function Button({ onClick, children }) {
+function Button({ onClick, children, type }) {
   return (
-    <button onClick={onClick} className="button">
+    <button type={type || "button"} onClick={onClick} className="button">
       {children}
     </button>
   );
