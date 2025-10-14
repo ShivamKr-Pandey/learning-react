@@ -1,3 +1,48 @@
+# Eat N Split — Data Flow Diagram
+
+This diagram shows the main component interactions and data flow for the Eat N Split app.
+
+```mermaid
+flowchart TD
+	%% Nodes (components)
+	App([App]):::appStyle
+	FriendsList([FriendsList]):::listStyle
+	FriendItem([FriendItem]):::itemStyle
+	AddFriend([AddFriend Form]):::addStyle
+	SplitBill([SplitBill Form]):::splitStyle
+
+	%% Data stores / Actions
+	StateStore([App State]):::stateStyle
+	UI([User Actions]):::uiStyle
+
+	%% Flows
+	UI --> App
+	App --> FriendsList
+	FriendsList --> FriendItem
+	FriendItem --> SplitBill
+	FriendItem --> App
+	AddFriend --> App
+	SplitBill --> App
+	App --> StateStore
+	StateStore --> FriendsList
+
+	%% Styling: distinct background colors and readable text
+	classDef appStyle fill:#0ea5a4,stroke:#044e54,color:#ffffff,stroke-width:1px;
+	classDef listStyle fill:#7c3aed,stroke:#4c1d95,color:#ffffff,stroke-width:1px;
+	classDef itemStyle fill:#f97316,stroke:#7c2d00,color:#ffffff,stroke-width:1px;
+	classDef addStyle fill:#06b6d4,stroke:#064e63,color:#000000,stroke-width:1px;
+	classDef splitStyle fill:#ef4444,stroke:#7f1d1d,color:#ffffff,stroke-width:1px;
+	classDef stateStyle fill:#111827,stroke:#000000,color:#ffffff,stroke-width:1px;
+	classDef uiStyle fill:#10b981,stroke:#064e3b,color:#ffffff,stroke-width:1px;
+
+	%% Make arrows thicker/visible (Mermaid doesn't support arrow styling per-edge reliably in all renderers, but stroke-width on nodes helps)
+```
+
+Notes:
+
+- Each node is a component or a conceptual state store.
+- Arrows show direction of data or event flow (user actions -> App -> components -> state updates).
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

@@ -1,4 +1,8 @@
 import { useState } from "react";
+import { SplitBill } from "./SplitBill";
+import { AddFriend } from "./AddFriend";
+import { Button } from "./Button";
+import { FriendsList } from "./FriendsList";
 
 const iniFriends = [
   {
@@ -22,10 +26,9 @@ const iniFriends = [
 ];
 
 function App() {
+  // States
   const [friends, setFriends] = useState(iniFriends);
-
   const [addFriend, setAddFriend] = useState(false);
-
   const [selectFriend, setSelectFriend] = useState(null);
 
   function handleAddFriend() {
@@ -38,20 +41,37 @@ function App() {
     setAddFriend(false);
   }
 
+  // Function to select a friend
   function handleSelect(friend) {
     setSelectFriend((cur) => (cur?.id === friend.id ? null : friend));
     setAddFriend(false);
   }
 
+  // Function to update the friends balance
+  function updateBalance(value) {
+    setFriends((friends) =>
+      friends.map((friend) =>
+        friend.id === selectFriend.id
+          ? { ...friend, balance: friend.balance + value }
+          : friend
+      )
+    );
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
+        {/* Friend List */}
         <FriendsList
           friends={friends}
           select={handleSelect}
           onSelect={selectFriend}
         />
+
+        {/* Add Friend Component*/}
         {addFriend && <AddFriend onAddFriend={addNewFriend} />}
+
+        {/* Add Friend Button */}
         <Button
           className="button"
           onClick={() => {
@@ -61,201 +81,12 @@ function App() {
           {addFriend ? "Close" : "Add Friend"}
         </Button>
       </div>
-      {selectFriend && <SplitBill selectFriend={selectFriend} />}
+
+      {/* Split Bill Component */}
+      {selectFriend && (
+        <SplitBill selectFriend={selectFriend} setBalance={updateBalance} />
+      )}
     </div>
-  );
-}
-
-function FriendsList({ friends, select, onSelect }) {
-  const friendsList = friends;
-
-  return (
-    <div>
-      <ul>
-        <Friends list={friendsList} select={select} onSelect={onSelect} />
-      </ul>
-    </div>
-  );
-}
-
-function Friends({ list, select, onSelect }) {
-  return (
-    <>
-      {list.map((friend) => (
-        <li
-          key={friend.id}
-          className={onSelect?.id === friend.id ? "selected" : ""}
-        >
-          <img src={friend.image} alt={friend.name} />
-          <h3>{friend.name}</h3>
-          <Button
-            onClick={() => {
-              select(friend);
-            }}
-          >
-            {onSelect?.id === friend.id ? "Close" : "Select"}
-          </Button>
-
-          {friend.balance < 0 && (
-            <p className="red">
-              You owe {friend.name} Rs {Math.abs(friend.balance)}
-            </p>
-          )}
-          {friend.balance > 0 && (
-            <p className="green">
-              {friend.name} owes you Rs {friend.balance}
-            </p>
-          )}
-          {friend.balance === 0 && <p>You and {friend.name} are even</p>}
-        </li>
-      ))}
-    </>
-  );
-}
-
-function SplitBill({ selectFriend }) {
-  const [totalBill, setTotalBill] = useState("");
-  const [yourExpense, setYourExpense] = useState("");
-  const [whoIsPaying, setWhoIsPaying] = useState("you");
-
-  const totalNum = Number(totalBill) || 0;
-  const yourNum = Number(yourExpense) || 0;
-  const friendExpense = Math.max(0, totalNum - yourNum);
-
-  function handleSubmit(e) {
-    e.preventDefault();
-    // replace with your logic to update balances
-    // Example: console.log({ totalNum, yourNum, friendExpense, whoIsPaying });
-
-    if (whoIsPaying === "you") {
-      selectFriend.balance += friendExpense;
-    } else {
-      selectFriend.balance -= friendExpense;
-    }
-
-    setTotalBill("");
-    setYourExpense("");
-    setWhoIsPaying("you");
-    return;
-  }
-
-  return (
-    <form className="form-split-bill" onSubmit={handleSubmit}>
-      <Input
-        id="bill"
-        value={totalBill}
-        type={"number"}
-        onChange={(e) => setTotalBill(e.target.value)} // fixed typo (target)
-      >
-        <span>💰</span> Bill Value
-      </Input>
-
-      <Input
-        id="your-expense"
-        value={yourExpense}
-        type={"number"}
-        onChange={(e) => setYourExpense(e.target.value)}
-      >
-        <span>🧍‍♂️</span> Your Expense
-      </Input>
-
-      <Input
-        id="friend-expense"
-        value={friendExpense}
-        type={"number"}
-        disabled={true}
-      >
-        <span>👯‍♂️</span> {selectFriend.name}'s expense:
-      </Input>
-
-      <label htmlFor="payee">
-        <span>🤑</span>Who is Paying the Bill?
-      </label>
-      <select
-        id="payee"
-        value={whoIsPaying}
-        onChange={(e) => setWhoIsPaying(e.target.value)}
-      >
-        <option value="you">You</option>
-        <option value="friend">{selectFriend.name}</option>
-      </select>
-
-      <Button type="submit">Split Bill</Button>
-    </form>
-  );
-}
-
-function AddFriend({ onAddFriend }) {
-  const [name, setName] = useState("");
-  const [image, setImage] = useState("https://i.pravatar.cc/48");
-
-  function addFriend(e) {
-    e.preventDefault();
-    if (!name || !image) return;
-
-    const id = crypto.randomUUID();
-    const newFriend = {
-      id: id,
-      name: name,
-      image: `${image}?=${id}`,
-      balance: 0,
-    };
-
-    onAddFriend(newFriend);
-
-    setName("");
-    setImage("https://i.pravatar.cc/48");
-  }
-
-  return (
-    <>
-      <form className="form-add-friend" onSubmit={addFriend}>
-        <Input
-          id="name"
-          value={name}
-          onChange={(e) => {
-            setName(e.target.value);
-          }}
-          type={"text"}
-        >
-          Friend Name
-        </Input>
-        <Input
-          id="image"
-          value={image}
-          onChange={(e) => {
-            setImage(e.target.value);
-          }}
-          type={"url"}
-        >
-          Image URL
-        </Input>
-        <Button type={"submit"}>Add</Button>
-      </form>
-    </>
-  );
-}
-
-function Button({ onClick, children, type }) {
-  return (
-    <button type={type || "button"} onClick={onClick} className="button">
-      {children}
-    </button>
-  );
-}
-
-function Input({ value, onChange, children, id, type, disabled }) {
-  return (
-    <>
-      <label htmlFor={id}>{children}</label>
-      <input
-        id={id}
-        value={value}
-        onChange={onChange}
-        type={type}
-        disabled={disabled}
-      />
-    </>
   );
 }
 
