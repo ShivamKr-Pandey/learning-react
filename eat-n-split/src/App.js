@@ -26,6 +26,8 @@ function App() {
 
   const [addFriend, setAddFriend] = useState(false);
 
+  const [selectFriend, setSelectFriend] = useState(null);
+
   function handleAddFriend() {
     setAddFriend((cur) => !cur);
   }
@@ -36,10 +38,18 @@ function App() {
     setAddFriend(false);
   }
 
+  function handleSelect(friend) {
+    setSelectFriend((cur) => (cur?.id === friend.id ? null : friend));
+  }
+
   return (
     <div className="app">
       <div className="sidebar">
-        <FriendsList friends={friends} />
+        <FriendsList
+          friends={friends}
+          select={handleSelect}
+          onSelect={selectFriend}
+        />
         {addFriend && <AddFriend onAddFriend={addNewFriend} />}
         <Button
           className="button"
@@ -50,31 +60,40 @@ function App() {
           {addFriend ? "Close" : "Add Friend"}
         </Button>
       </div>
-      <SplitBill />
+      {selectFriend && <SplitBill selectFriend={selectFriend} />}
     </div>
   );
 }
 
-function FriendsList({ friends }) {
+function FriendsList({ friends, select, onSelect }) {
   const friendsList = friends;
 
   return (
     <div>
       <ul>
-        <Friends list={friendsList} />
+        <Friends list={friendsList} select={select} onSelect={onSelect} />
       </ul>
     </div>
   );
 }
 
-function Friends({ list }) {
+function Friends({ list, select, onSelect }) {
   return (
     <>
       {list.map((friend) => (
-        <li key={friend.id}>
+        <li
+          key={friend.id}
+          className={onSelect?.id === friend.id ? "selected" : ""}
+        >
           <img src={friend.image} alt={friend.name} />
           <h3>{friend.name}</h3>
-          <Button onClick={() => {}}>Select</Button>
+          <Button
+            onClick={() => {
+              select(friend);
+            }}
+          >
+            {onSelect?.id === friend.id ? "Close" : "Select"}
+          </Button>
 
           {friend.balance < 0 && (
             <p className="red">
@@ -93,30 +112,63 @@ function Friends({ list }) {
   );
 }
 
-function SplitBill({ name }) {
+function SplitBill({ selectFriend }) {
+  const [totalBill, setTotalBill] = useState("");
+  const [yourExpense, setYourExpense] = useState("");
+  const [friendExpense, setFriendExpense] = useState("");
+  const [whoIsPaying, setWhoIsPaying] = useState("you");
+
+  function handelFriendsExpense() {
+    const friendExpense = totalBill - yourExpense;
+    setFriendExpense(friendExpense);
+  }
+
   return (
     <form className="form-split-bill">
-      <Input id="bill" value="" type={"number"} onChange={() => {}}>
+      <Input
+        id="bill"
+        value={totalBill}
+        type={"number"}
+        onChange={(e) => {
+          setTotalBill(e.traget.value);
+        }}
+      >
         <span>💰</span> Bill Value
       </Input>
-      <Input id="your-expense" value="" type={"number"} onChange={() => {}}>
+      <Input
+        id="your-expense"
+        value={yourExpense}
+        type={"number"}
+        onChange={(e) => {
+          setYourExpense(e.target.value);
+        }}
+        onBlur={handelFriendsExpense}
+      >
         <span>🧍‍♂️</span> Your Expense
       </Input>
       <Input
         id="friend-expense"
-        value=""
+        value={friendExpense}
         type={"number"}
         disabled={"true"}
-        onChange={() => {}}
+        onChange={(e) => {
+          setFriendExpense(e.target.value);
+        }}
       >
-        <span>👯‍♂️</span> {name}'s expense:
+        <span>👯‍♂️</span> {selectFriend.name}'s expense:
       </Input>
-      <label for="payee">
+      <label htmlFor="payee">
         <span>🤑</span>Who is Paying the Bill?
       </label>
-      <select id="payee">
+      <select
+        id="payee"
+        value={whoIsPaying}
+        onChange={(e) => {
+          setWhoIsPaying(e.target.value);
+        }}
+      >
         <option value="you">You</option>
-        <option value="friend">{name}</option>
+        <option value="friend">{selectFriend.name}</option>
       </select>
       <Button onClick={() => {}}>Split Bill</Button>
     </form>
